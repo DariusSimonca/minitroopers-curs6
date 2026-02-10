@@ -68,7 +68,10 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
 
     @Override
     public List<MaintenanceTask> findByVin(String vin) {
-        return null;
+        List<MaintenanceTaskEntity> entities = list("vin", vin);
+        return entities.stream().
+                map(mapper::toDomain)
+                .toList();
     }
 
 

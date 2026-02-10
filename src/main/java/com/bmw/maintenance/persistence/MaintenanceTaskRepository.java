@@ -68,7 +68,11 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
 
     @Override
     public List<MaintenanceTask> findAllTasks() {
-        return List.of();
+        List<MaintenanceTaskEntity> entities = listAll();
+
+        return entities.stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
     @Override

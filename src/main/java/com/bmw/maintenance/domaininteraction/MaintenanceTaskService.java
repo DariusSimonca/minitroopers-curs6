@@ -80,11 +80,11 @@ public class MaintenanceTaskService {
      * @return matching tasks
      */
 
-    /*
+
     public List<MaintenanceTask> listTasks(String vin) {
         if (vin != null && !vin.isBlank()) {
             return maintenanceTasks.findByVin(vin);
         }
-        return maintenanceTasks.findAll();
-    } */
+        return maintenanceTasks.findAllTasks();
+    }
 }

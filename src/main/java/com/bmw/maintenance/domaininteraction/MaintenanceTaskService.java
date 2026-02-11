@@ -6,6 +6,8 @@ import com.bmw.maintenance.domain.TaskType;
 
 import java.util.List;
 
+import com.bmw.maintenance.domain.TireTask.TirePosition;
+import com.bmw.maintenance.domain.TireTask.TireServiceType;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
@@ -33,10 +35,11 @@ public class MaintenanceTaskService {
      * @param notes optional notes
      * @return created task id
      */
-    public Long createTask(String vin, TaskType type, String notes) {
+    public Long createTask(String vin, TaskType type, String notes, TirePosition tirePosition, TireServiceType tireServiceType) {
         MaintenanceTask task = switch (type) {
             case OIL_CHANGE -> MaintenanceTask.createOilChange(vin, notes);
             case BRAKE_INSPECTION -> MaintenanceTask.createBrakeInspection(vin, notes);
+            case TIRE_SERVICE -> MaintenanceTask.createTireService(vin, notes, tireServiceType, tirePosition);
         };
 
         MaintenanceTask created = maintenanceTasks.create(task);

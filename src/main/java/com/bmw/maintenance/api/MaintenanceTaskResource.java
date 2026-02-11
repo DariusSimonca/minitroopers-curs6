@@ -2,6 +2,8 @@ package com.bmw.maintenance.api;
 
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domain.TaskType;
+import com.bmw.maintenance.domain.TireTask.TirePosition;
+import com.bmw.maintenance.domain.TireTask.TireServiceType;
 import com.bmw.maintenance.domaininteraction.MaintenanceTaskService;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -44,7 +46,7 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes());
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(),request.tirePosition, request.tireServiceType);
 
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
@@ -116,6 +118,10 @@ public class MaintenanceTaskResource {
 
             @NotNull
             TaskType type,
+
+            TireServiceType tireServiceType,
+
+            TirePosition tirePosition,
 
             String notes
     ) {}

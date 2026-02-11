@@ -1,5 +1,7 @@
 package com.bmw.maintenance.domain;
 
+import com.bmw.maintenance.domain.TireTask.TirePosition;
+import com.bmw.maintenance.domain.TireTask.TireServiceType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +26,8 @@ public class MaintenanceTask {
     private Long taskId;
     private String vin;
     private TaskType type;
+    private TirePosition tirePosition;
+    private TireServiceType tireServiceType;
     private TaskStatus status;
     private String notes;
 
@@ -41,6 +45,19 @@ public class MaintenanceTask {
                 .vin(vin)
                 .type(TaskType.OIL_CHANGE)
                 .status(TaskStatus.IN_PROGRESS)
+                .notes(notes)
+                .build();
+        task.validateBusinessRules();
+        return task;
+    }
+
+    public static MaintenanceTask createTireService(String vin, String notes, TireServiceType type, TirePosition position) {
+        MaintenanceTask task = MaintenanceTask.builder()
+                .vin(vin)
+                .type(TaskType.TIRE_SERVICE)
+                .status(TaskStatus.IN_PROGRESS)
+                .tireServiceType(type)
+                .tirePosition(position)
                 .notes(notes)
                 .build();
         task.validateBusinessRules();
@@ -76,12 +93,14 @@ public class MaintenanceTask {
      * @param notes  optional notes for the task
      * @return a \`MaintenanceTask\` populated from stored values
      */
-    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, String notes) {
+    public static MaintenanceTask reconstitute(Long taskId, String vin, TaskType type, TaskStatus status, TirePosition tirePosition, TireServiceType tireServiceType, String notes) {
         return MaintenanceTask.builder()
                 .taskId(taskId)
                 .vin(vin)
                 .type(type)
                 .status(status)
+                .tireServiceType(tireServiceType)
+                .tirePosition(tirePosition)
                 .notes(notes)
                 .build();
     }

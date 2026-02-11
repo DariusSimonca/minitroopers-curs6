@@ -40,6 +40,14 @@ paths:
                   vin: "WBA3B5C50DF123456"
                   type: "BRAKE_INSPECTION"
                   notes: "Annual brake inspection"
+              tireService:
+                summary: Tire Service Task
+                value:
+                  vin: "WBA3B5C50DF123456"
+                  type: "TIRE_SERVICE"
+                  tirePosition: "FRONT_LEFT"
+                  tireServiceType: "TIRE_REPLACEMENT"
+                  notes: "Simple tire replacement"
       responses:
         '201':
           description: Task created successfully

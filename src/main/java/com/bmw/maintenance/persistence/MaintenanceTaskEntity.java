@@ -5,6 +5,8 @@ import com.bmw.maintenance.domain.TaskType;
 
 import java.time.LocalDateTime;
 
+import com.bmw.maintenance.domain.TireTask.TirePosition;
+import com.bmw.maintenance.domain.TireTask.TireServiceType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +30,8 @@ public class MaintenanceTaskEntity {
     private TaskType type;
     private TaskStatus status;
     private String notes;
+    private TireServiceType tireServiceType;
+    private TirePosition tirePosition;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

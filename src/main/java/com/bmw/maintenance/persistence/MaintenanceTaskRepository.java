@@ -1,30 +1,43 @@
 package com.bmw.maintenance.persistence;
 
+import com.bmw.maintenance.commons.serialization.VersionedSchemaSerDes;
 import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskStatus;
 import com.bmw.maintenance.domaininteraction.MaintenanceTasks;
+import com.bmw.maintenance.persistence.mapper.MaintenanceTaskMapper;
+import com.bmw.maintenance.persistence.mapper.MaintenanceTaskSchemaVLatest;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceTaskEntity>, MaintenanceTasks {
 
     private final MaintenanceTaskMapper mapper;
+    private final VersionedSchemaSerDes<String> serializer;
 
-    public MaintenanceTaskRepository(MaintenanceTaskMapper mapper) {
+    public MaintenanceTaskRepository(MaintenanceTaskMapper mapper, VersionedSchemaSerDes<String> serializer) {
         this.mapper = mapper;
+        this.serializer = serializer;
     }
 
     @Override
     public MaintenanceTask create(MaintenanceTask task) {
-        MaintenanceTaskEntity entity = mapper.toEntity(task);
+        MaintenanceTaskSchemaVLatest.MaintenanceTask schema = mapper.toSchema(task);
+        String serializedAggregate = serializer.serialize(schema);
+
+        // Create entity with serialized aggregate
+        MaintenanceTaskEntity entity = new MaintenanceTaskEntity();
+        entity.setAggregate(serializedAggregate);
         entity.setCreatedAt(LocalDateTime.now());
+        entity.setUpdatedAt(LocalDateTime.now());
         persist(entity);
-        return mapper.toDomain(entity);
+        return mapper.toDomain(schema);
     }
 
     @Override
@@ -35,10 +48,19 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        entity.setStatus(newStatus);
+        // Deserialize aggregate to schema
+        MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
+                (MaintenanceTaskSchemaVLatest.MaintenanceTask) serializer.deserialize(entity.getAggregate());
+
+        // Update schema
+        schema.setStatus(newStatus);
+
+        // Serialize updated schema
+        String serializedAggregate = serializer.serialize(schema);
+        entity.setAggregate(serializedAggregate);
         entity.setUpdatedAt(LocalDateTime.now());
 
-        return mapper.toDomain(entity);
+        return mapper.toDomain(schema);
     }
 
     @Override
@@ -49,10 +71,18 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
             throw new NotFoundException("Task not found: " + taskId);
         }
 
-        entity.setNotes(notes);
+        MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
+                (MaintenanceTaskSchemaVLatest.MaintenanceTask) serializer.deserialize(entity.getAggregate());
+
+        // Update schema
+        schema.setNotes(notes);
+
+        // Serialize updated schema
+        String serializedAggregate = serializer.serialize(schema);
+        entity.setAggregate(serializedAggregate);
         entity.setUpdatedAt(LocalDateTime.now());
 
-        return mapper.toDomain(entity);
+        return mapper.toDomain(schema);
     }
 
     @Override
@@ -61,7 +91,11 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
         if (entity == null) {
             throw new NotFoundException("Task not found: " + taskId);
         }
-        return mapper.toDomain(entity);
+
+        MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
+                (MaintenanceTaskSchemaVLatest.MaintenanceTask) serializer.deserialize(entity.getAggregate());
+
+        return mapper.toDomain(schema);
     }
 
     @Override
@@ -69,16 +103,25 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
         List<MaintenanceTaskEntity> entities = listAll();
 
         return entities.stream()
-                .map(mapper::toDomain)
-                .toList();
+                .map(entity -> {
+                    MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
+                            (MaintenanceTaskSchemaVLatest.MaintenanceTask) serializer.deserialize(entity.getAggregate());
+                    return mapper.toDomain(schema);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<MaintenanceTask> findByVin(String vin) {
         List<MaintenanceTaskEntity> entities = list("vin", vin);
-        return entities.stream().
-                map(mapper::toDomain)
-                .toList();
+        return entities.stream()
+                .map(entity -> {
+                    MaintenanceTaskSchemaVLatest.MaintenanceTask schema =
+                            (MaintenanceTaskSchemaVLatest.MaintenanceTask) serializer.deserialize(entity.getAggregate());
+                    return mapper.toDomain(schema);
+                })
+                .filter(task -> vin.equals(task.getVin()))
+                .collect(Collectors.toList());
     }
 
 

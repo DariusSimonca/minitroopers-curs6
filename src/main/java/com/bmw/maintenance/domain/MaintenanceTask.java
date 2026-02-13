@@ -56,8 +56,8 @@ public class MaintenanceTask {
                 .vin(vin)
                 .type(TaskType.TIRE_SERVICE)
                 .status(TaskStatus.IN_PROGRESS)
-                .tireServiceType(type)
-                .tirePosition(position)
+                .tireServiceType(TireServiceType.valueOf(String.valueOf(type)))
+                .tirePosition(TirePosition.valueOf(String.valueOf(position)))
                 .notes(notes)
                 .build();
         task.validateBusinessRules();

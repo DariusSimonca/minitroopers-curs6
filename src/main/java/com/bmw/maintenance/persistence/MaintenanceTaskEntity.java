@@ -26,12 +26,7 @@ public class MaintenanceTaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String vin;
-    private TaskType type;
-    private TaskStatus status;
-    private String notes;
-    private TireServiceType tireServiceType;
-    private TirePosition tirePosition;
+    private String aggregate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

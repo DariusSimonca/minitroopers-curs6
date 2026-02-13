@@ -33,9 +33,15 @@ public class MaintenanceTaskRepository implements PanacheRepository<MaintenanceT
 
         // Create entity with serialized aggregate
         MaintenanceTaskEntity entity = new MaintenanceTaskEntity();
+        persist(entity);
+
         entity.setAggregate(serializedAggregate);
         entity.setCreatedAt(LocalDateTime.now());
+        schema.setTaskId(entity.getId());
+        serializedAggregate = serializer.serialize(schema);
+        entity.setAggregate(serializedAggregate);
         entity.setUpdatedAt(LocalDateTime.now());
+
         persist(entity);
         return mapper.toDomain(schema);
     }

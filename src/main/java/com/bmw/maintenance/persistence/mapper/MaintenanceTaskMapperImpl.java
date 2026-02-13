@@ -31,6 +31,8 @@ public class MaintenanceTaskMapperImpl implements MaintenanceTaskMapper {
         schema.setVin(task.getVin());
         schema.setType(task.getType());
         schema.setStatus(task.getStatus());
+        schema.setTirePosition(task.getTirePosition());
+        schema.setTireServiceType(task.getTireServiceType());
         schema.setNotes(task.getNotes());
 
         return schema;

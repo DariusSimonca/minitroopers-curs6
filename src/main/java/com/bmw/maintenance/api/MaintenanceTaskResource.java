@@ -53,13 +53,7 @@ public class MaintenanceTaskResource {
     @POST
     @Path("/")
     public Response createTask(@Valid CreateTaskRequest request) {
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put("tirePosition",request.tirePosition);
-        additionalData.put("tireServiceType",request.tireServiceType);
-        additionalData.put("scannerType",request.scannerType);
-        additionalData.put("errorCodes",request.errorCodes);
-
-        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(),additionalData);
+        Long taskId = maintenanceTaskService.createTask(request.vin(), request.type(), request.notes(),request.additionalData());
         return Response.status(Response.Status.CREATED).entity(taskId).build();
     }
 
@@ -131,12 +125,7 @@ public class MaintenanceTaskResource {
             @NotNull
             TaskType type,
 
-            TireServiceType tireServiceType,
-
-            TirePosition tirePosition,
-
-            ScannerType scannerType,
-            Set<ErrorCodes> errorCodes,
+            Map<String, Object> additionalData,
 
             String notes
     ) {}

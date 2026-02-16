@@ -6,8 +6,10 @@ import com.bmw.maintenance.domain.MaintenanceTask;
 import com.bmw.maintenance.domain.TaskType;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class DiagnosticScanTask implements TaskCreator {
@@ -18,6 +20,12 @@ public class DiagnosticScanTask implements TaskCreator {
 
     @Override
     public MaintenanceTask create(String vin, String notes, Map<String, Object> additionalData) {
-        return MaintenanceTask.createDiagnosticScanService(vin,notes, (ScannerType) additionalData.get("scannerType"), (Set<ErrorCodes>) additionalData.get("errorCodes"));
+
+        List<String> codes = (List<String>) additionalData.get("errorCodes");
+        Set<ErrorCodes> errorCodes = codes.stream()
+                .map(ErrorCodes::valueOf)
+                .collect(Collectors.toSet());
+
+        return MaintenanceTask.createDiagnosticScanService(vin,notes, ScannerType.valueOf((String) additionalData.get("scannerType")), errorCodes);
     }
 }

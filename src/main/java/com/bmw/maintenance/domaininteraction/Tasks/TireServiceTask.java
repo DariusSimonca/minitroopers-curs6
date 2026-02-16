@@ -18,6 +18,6 @@ public class TireServiceTask implements TaskCreator {
 
     @Override
     public MaintenanceTask create(String vin, String notes, Map<String, Object> additionalData) {
-        return MaintenanceTask.createTireService(vin,notes, (TireServiceType) additionalData.get("tireServiceType"), (TirePosition) additionalData.get("tirePosition"));
+        return MaintenanceTask.createTireService(vin,notes, TireServiceType.valueOf((String) additionalData.get("tireServiceType")),TirePosition.valueOf((String) additionalData.get("tirePosition")));
     }
 }

@@ -45,16 +45,18 @@ paths:
                 value:
                   vin: "WBA3B5C50DF123456"
                   type: "TIRE_SERVICE"
-                  tirePosition: "FRONT_LEFT"
-                  tireServiceType: "TIRE_REPLACEMENT"
+                  additionalData:
+                    tirePosition: "FRONT_LEFT"
+                    tireServiceType: "TIRE_REPLACEMENT"
                   notes: "Simple tire replacement"
               diagnosticScan:
                 summary: Diagnostic Scan Service
                 value:
                   vin: "WBA3B5C50DF123456"
                   type: "DIAGNOSTIC_SCAN"
-                  scannerType: "ADVANCED"
-                  errorCodes: ["C0035","B1000"]
+                  additionalData:
+                    scannerType: "ADVANCED"
+                    errorCodes: ["C0035","B1000"]
                   notes: "Diagnostic scan for a car"
       responses:
         '201':
